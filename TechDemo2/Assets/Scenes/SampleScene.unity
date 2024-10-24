@@ -865,6 +865,7 @@ GameObject:
   - component: {fileID: 1850405539}
   - component: {fileID: 1850405538}
   - component: {fileID: 1850405544}
+  - component: {fileID: 1850405545}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -1024,6 +1025,23 @@ MonoBehaviour:
   Sensitivity: 1
   CameraHolder: {fileID: 330585546}
   MaxViewingAngle: 80
+--- !u!114 &1850405545
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1850405537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88a029561cddf394290c474210e26673, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  IgnoredLayers:
+    serializedVersion: 2
+    m_Bits: 63
+  MaxRange: 3
+  MinAllignmentOfRay: 0.9
 --- !u!1 &2073689664
 GameObject:
   m_ObjectHideFlags: 0
@@ -1036,6 +1054,8 @@ GameObject:
   - component: {fileID: 2073689667}
   - component: {fileID: 2073689666}
   - component: {fileID: 2073689665}
+  - component: {fileID: 2073689669}
+  - component: {fileID: 2073689670}
   m_Layer: 0
   m_Name: InteractableCube
   m_TagString: Untagged
@@ -1086,7 +1106,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 1426c4bbbb933ab43a1c74807c8ed75e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1131,6 +1151,40 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2073689669
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2073689664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3dfbf6f7a39421541880540067377e42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  InteractableLayer: 6
+  InteractableTag: Interactable
+  OutlineWidth: 10
+  ToolTip: interact.
+--- !u!114 &2073689670
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2073689664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMode: 0
+  outlineColor: {r: 1, g: 1, b: 1, a: 1}
+  outlineWidth: 2
+  precomputeOutline: 0
+  bakeKeys: []
+  bakeValues: []
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

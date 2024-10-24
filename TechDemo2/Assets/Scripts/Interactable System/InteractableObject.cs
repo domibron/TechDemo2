@@ -2,9 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Outline))]
 public class InteractableObject : MonoBehaviour, IInteractable
 {
-	public string ToolTip = "interact.";
+	public int InteractableLayer = 6;
+	public string InteractableTag = "Interactable";
+
+	public float OutlineWidth = 10f;
+
+    public string ToolTip = "interact.";
+
+	private Outline _outline;
 
 	string IInteractable.InteractionToolTipDescriptive { get => ToolTip; }
 
@@ -15,15 +23,30 @@ public class InteractableObject : MonoBehaviour, IInteractable
 		throw new System.NotImplementedException();
 	}
 
-	// Start is called before the first frame update
-	void Start()
+	void IInteractable.OnSelected()
 	{
+		_outline.OutlineWidth = OutlineWidth;
 
-	}
+    }
 
-	// Update is called once per frame
-	void Update()
+	void IInteractable.OnDeselected()
 	{
+        _outline.OutlineWidth = 0f;
 
-	}
+    }
+
+    private void Awake()
+    {
+		gameObject.layer = InteractableLayer;
+		gameObject.tag = InteractableTag;
+
+
+    }
+
+    private void Start()
+    {
+        _outline = GetComponent<Outline>();
+
+        _outline.OutlineWidth = 0f;
+    }
 }
