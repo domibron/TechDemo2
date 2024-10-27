@@ -11,6 +11,8 @@ public class InteractableController : MonoBehaviour
 
 	public float MinAllignmentOfRay = 0.8f;
 
+	public bool Locked = false;
+
 	private Camera _camera;
 	private Transform _cameraTransform;
 
@@ -21,11 +23,19 @@ public class InteractableController : MonoBehaviour
 	{
 		_camera = Camera.main;
 		_cameraTransform = _camera.transform;
+
+		IgnoredLayers = ~IgnoredLayers;
 	}
 
 	// Update is called once per frame
 	void Update()
 	{
+		if (Locked)
+		{
+			DeselectSelectedObject();
+			return;
+		}
+
 		GetNearInteractableObjects();
 
 		if (Input.GetKeyDown(KeyCode.E) && _selectedObject != null)
@@ -40,7 +50,7 @@ public class InteractableController : MonoBehaviour
 		Ray ray = new Ray(_cameraTransform.position, _cameraTransform.forward);
 		Debug.DrawRay(ray.origin, ray.direction, Color.red);
 
-		Collider[] nearObjects = Physics.OverlapSphere(transform.position, MaxRange, ~IgnoredLayers, QueryTriggerInteraction.Ignore);
+		Collider[] nearObjects = Physics.OverlapSphere(transform.position, MaxRange, IgnoredLayers, QueryTriggerInteraction.Ignore);
 
 		if (nearObjects.Length <= 0)
 		{
@@ -49,8 +59,6 @@ public class InteractableController : MonoBehaviour
 			return;
 		}
 
-		// List<Collider> objectsNearRay = new List<Collider>();
-
 
 		Collider closetsObject = null;
 		float Angle = MinAllignmentOfRay;
@@ -58,8 +66,6 @@ public class InteractableController : MonoBehaviour
 
 		for (int i = 0; i < nearObjects.Length; i++)
 		{
-			print(Vector3.Dot(ray.direction.normalized, (nearObjects[i].transform.position - _cameraTransform.position).normalized) + $" > {Angle} | " + Vector3.Distance(_cameraTransform.position, nearObjects[i].transform.position) + $" < {distanceOfClosestObject}");
-
 
 			if (Vector3.Dot(ray.direction.normalized, (nearObjects[i].transform.position - _cameraTransform.position).normalized) > Angle && Vector3.Distance(_cameraTransform.position, nearObjects[i].transform.position) < distanceOfClosestObject && closetsObject == null)
 			{
@@ -80,46 +86,8 @@ public class InteractableController : MonoBehaviour
 				Angle = Vector3.Dot(ray.direction.normalized, (nearObjects[i].transform.position - _cameraTransform.position).normalized);
 
 				continue;
-
-
-				//objectsNearRay.Add(nearObjects[i]);
 			}
 		}
-
-		// if (objectsNearRay.Count <= 0)
-		// {
-		// 	DeselectSelectedObject();
-
-		// 	return;
-		// }
-
-
-		// if (objectsNearRay.Count == 1)
-		// {
-		// 	SelectObject(objectsNearRay[0].transform);
-
-		// 	return;
-		// }
-
-
-
-		// for (int i = 0; i < objectsNearRay.Count; i++)
-		// {
-
-		// 	if (closetsObject == null)
-		// 	{
-		// 		closetsObject = objectsNearRay[i];
-		// 		distanceOfClosestObject = Vector3.Distance(transform.position, objectsNearRay[i].transform.position);
-		// 		continue;
-		// 	}
-
-		// 	if (Vector3.Distance(transform.position, closetsObject.transform.position) < distanceOfClosestObject)
-		// 	{
-		// 		closetsObject = objectsNearRay[i];
-		// 		distanceOfClosestObject = Vector3.Distance(transform.position, objectsNearRay[i].transform.position);
-		// 		continue;
-		// 	}
-		// }
 
 		if (closetsObject == null)
 		{
@@ -130,6 +98,11 @@ public class InteractableController : MonoBehaviour
 		}
 
 		SelectObject(closetsObject.transform);
+	}
+
+	private static Ray GetRay(Transform point)
+	{
+		return new Ray(point.position, point.forward);
 	}
 
 	private void SelectObject(Transform objectToSelect)
@@ -143,7 +116,18 @@ public class InteractableController : MonoBehaviour
 
 		_selectedObject = objectToSelect.GetComponent<IInteractable>();
 
-		_selectedObject.OnSelected();
+		if (Physics.Raycast(GetRay(_cameraTransform), out RaycastHit raycastHit, MaxRange, IgnoredLayers))
+		{
+			if (raycastHit.transform.CompareTag("Interactable"))
+			{
+				_selectedObject.OnSelected();
+
+				return;
+			}
+		}
+
+		DeselectSelectedObject();
+
 	}
 
 	private void DeselectSelectedObject()

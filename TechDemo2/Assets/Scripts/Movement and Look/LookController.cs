@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class LookController : MonoBehaviour
 {
+	public bool Locked = false;
+
 	public float Sensitivity = 1f;
 
 	public Transform CameraHolder;
@@ -21,6 +23,8 @@ public class LookController : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
+		if (Locked) return;
+
 		HandleLook();
 	}
 
