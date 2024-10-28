@@ -23,6 +23,9 @@ public class KeyPad : MonoBehaviour
 	public GameObject RealKeypad;
 	public GameObject OverlayKeypadForInteractableSystem;
 
+	public GameObject RedLight;
+	public GameObject GreenLight;
+
 	public Transform CameraTargetLocationAndRotation;
 
 	public TMP_Text Display;
@@ -41,6 +44,10 @@ public class KeyPad : MonoBehaviour
 
 	public float CameraLerpSpeed = 1f;
 
+	public AudioClip GoodBeep;
+	public AudioClip BadBeep;
+	public AudioClip SingleBeep;
+
 	public UnityEvent OnUnlocked;
 
 	private Transform _playerCameraTransform;
@@ -49,6 +56,7 @@ public class KeyPad : MonoBehaviour
 	private LookController _lookController;
 	private MovementController _movementController;
 	private InteractableController _interactableController;
+	private AudioSource audioSource;
 
 	private bool _playerOnKeypad = false;
 
@@ -67,6 +75,8 @@ public class KeyPad : MonoBehaviour
 	private Quaternion _cameraLastRotation;
 	private Vector3 _cameraLastPosition;
 
+	private bool _animationPlaying = false;
+
 	// Start is called before the first frame update
 	void Start()
 	{
@@ -75,6 +85,8 @@ public class KeyPad : MonoBehaviour
 		_movementController = _player.GetComponent<MovementController>();
 		_playerCamera = Camera.main;
 		_playerCameraTransform = Camera.main.transform;
+
+		audioSource = GetComponent<AudioSource>();
 
 		_interactableController = _player.GetComponent<InteractableController>();
 
@@ -106,6 +118,8 @@ public class KeyPad : MonoBehaviour
 
 		if (_selectedKey != null && Input.GetKeyDown(KeyCode.Mouse0))
 		{
+
+
 			_selectedKey.InteractWithObject();
 		}
 	}
@@ -127,6 +141,10 @@ public class KeyPad : MonoBehaviour
 		}
 
 		_currentPlace = 0;
+
+		RedLight.SetActive(true);
+		GreenLight.SetActive(false);
+
 
 		UpdateDisplay();
 	}
@@ -151,36 +169,84 @@ public class KeyPad : MonoBehaviour
 
 	public void EnterKey(KeyPadButtonType buttonType)
 	{
+
+
+
 		if ((int)buttonType == 10)
 		{
+
+			if (_animationPlaying)
+			{
+				StopCoroutine(nameof(CodeFlash));
+				ResetKeypadAnimation();
+			}
+
 			ClearCurrentInput();
+
+			audioSource.PlayOneShot(SingleBeep);
 			UpdateDisplay();
+
 			return;
 		}
 		else if ((int)buttonType == 11)
 		{
-			SubmitCode();
+			audioSource.PlayOneShot(SingleBeep);
 			UpdateDisplay();
+
+			SubmitCode();
+
 			return;
 		}
 		else if ((int)buttonType == 12)
 		{
+			if (_animationPlaying)
+			{
+				StopCoroutine(nameof(CodeFlash));
+				ClearCurrentInput();
+				ResetKeypadAnimation();
+			}
+
 			DeleteLastInCurrentInput();
+
+			audioSource.PlayOneShot(SingleBeep);
 			UpdateDisplay();
+
 			return;
 		}
 
+
+		if (_animationPlaying)
+		{
+			StopCoroutine(nameof(CodeFlash));
+			ClearCurrentInput();
+			ResetKeypadAnimation();
+		}
+
 		EnterNumToKeypad((int)buttonType);
+
+		audioSource.PlayOneShot(SingleBeep);
 		UpdateDisplay();
-		// any other keys
+
 	}
 
 	private void SubmitCode()
 	{
 		if (_currentInput.ArrayToString() == CodeToUnlock)
 		{
-			print("YIPPIE");
+
 			OnUnlocked.Invoke();
+
+			if (!_animationPlaying)
+			{
+				StartCoroutine(CodeFlash(GoodBeep, "green", true));
+			}
+		}
+		else
+		{
+			if (!_animationPlaying)
+			{
+				StartCoroutine(CodeFlash(BadBeep, "red"));
+			}
 		}
 	}
 
@@ -212,6 +278,12 @@ public class KeyPad : MonoBehaviour
 	{
 
 		Display.text = _currentInput.ArrayToString().Replace(' ', 'X');
+	}
+
+	private void UpdateDisplay(string textToDisplay)
+	{
+
+		Display.text = textToDisplay;
 	}
 
 	private Ray GetRay(Camera camera)
@@ -302,5 +374,71 @@ public class KeyPad : MonoBehaviour
 		SetKeypadState(lerpTowardsTarget);
 
 
+	}
+
+	private IEnumerator CodeFlash(AudioClip beeps, string colorInRichText, bool isGood = false, bool permGreenLight = false, int durationInSeconds = 2)
+	{
+		_animationPlaying = true;
+
+
+		audioSource.clip = beeps;
+		audioSource.loop = true;
+		audioSource.Play();
+
+		string currentCode = _currentInput.ArrayToString().Replace(' ', 'X');
+
+		if (isGood)
+		{
+			RedLight.SetActive(false);
+			GreenLight.SetActive(true);
+		}
+
+		for (int i = 0; i <= durationInSeconds * 2; i++)
+		{
+			UpdateDisplay($"<color={colorInRichText}>{currentCode}</color>");
+			RedLight.SetActive(false);
+			GreenLight.SetActive(false);
+			yield return new WaitForSeconds(0.25f);
+
+			if (!_animationPlaying)
+			{
+				ResetKeypadAnimation(permGreenLight);
+				break;
+			}
+
+			UpdateDisplay($"<color=white>{currentCode}</color>");
+			RedLight.SetActive(!isGood);
+			GreenLight.SetActive(isGood);
+			yield return new WaitForSeconds(0.25f);
+
+			if (!_animationPlaying)
+			{
+				ResetKeypadAnimation(permGreenLight);
+				break;
+			}
+
+		}
+
+
+
+		if (_animationPlaying)
+		{
+			ClearCurrentInput();
+			ResetKeypadAnimation(permGreenLight);
+		}
+
+
+	}
+
+	private void ResetKeypadAnimation(bool greenLightLit = false)
+	{
+		RedLight.SetActive(!greenLightLit);
+		GreenLight.SetActive(greenLightLit);
+
+		audioSource.Stop();
+
+		UpdateDisplay();
+
+		_animationPlaying = false;
 	}
 }

@@ -31,7 +31,6 @@ public class KeyPadButton : MonoBehaviour, IInteractable
 
 	public float OutlineWidth = 10f;
 
-
 	string IInteractable.InteractionToolTipDescriptive => $"enter {KeyPadButtonType}";
 
 
@@ -46,7 +45,6 @@ public class KeyPadButton : MonoBehaviour, IInteractable
 	{
 		gameObject.tag = ButtonTag;
 		gameObject.layer = InteractableLayer;
-
 
 		_outline = GetComponent<Outline>();
 		_buttonAnimator = GetComponent<Animator>();
