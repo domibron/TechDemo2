@@ -240,6 +240,8 @@ public class KeyPad : MonoBehaviour
 			{
 				StartCoroutine(CodeFlash(GoodBeep, "green", true));
 			}
+
+			if (_playerOnKeypad) ExitKeypad();
 		}
 		else
 		{
@@ -293,6 +295,8 @@ public class KeyPad : MonoBehaviour
 
 	public void EnterKeypad()
 	{
+		if (_playerOnKeypad) return;
+
 		_playerOnKeypad = true;
 
 		_interactableController.Locked = _playerOnKeypad;
@@ -314,7 +318,7 @@ public class KeyPad : MonoBehaviour
 	public void ExitKeypad()
 	{
 
-		if (!_isLerping)
+		if (!_isLerping || !_playerOnKeypad)
 		{
 			StartCoroutine(LerpCamera(false));
 		}
