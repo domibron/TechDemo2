@@ -13194,7 +13194,7 @@ PrefabInstance:
     - target: {fileID: 1701276415649463735, guid: e580adbbda2feed4683c3208f6e333fa,
         type: 3}
       propertyPath: CodeToUnlock
-      value: 12341234
+      value: 1234
       objectReference: {fileID: 0}
     - target: {fileID: 1701276415649463735, guid: e580adbbda2feed4683c3208f6e333fa,
         type: 3}
