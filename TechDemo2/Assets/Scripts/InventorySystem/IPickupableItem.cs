@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface PickupableInventoryItem
+public interface IPickupableInventoryItem
 {
 	public GenericItem item { get; set; }
 

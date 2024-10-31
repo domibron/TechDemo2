@@ -9,7 +9,7 @@ public class BasicInventoryItem : MonoBehaviour, IInventoryItem
 	bool IInventoryItem.IsUsable { get => GenericItemSO.ItemIsUsable; }
 	GenericItem IInventoryItem.GenericItemSO { get => GenericItemSO; set => GenericItemSO = value; }
 
-
+	private int key;
 
 	// Start is called before the first frame update
 	void Start()

@@ -20,6 +20,8 @@ public class InventoryManager : MonoBehaviour
 
 	public Transform PlayerTransform;
 
+	public GameObject Inventory;
+
 	public Dictionary<int, GameObject> ItemsInSlots;
 
 	public GameObject[] Slots;
@@ -39,7 +41,7 @@ public class InventoryManager : MonoBehaviour
 	// Start is called before the first frame update
 	void Start()
 	{
-
+		Inventory.SetActive(false);
 	}
 
 	// Update is called once per frame
