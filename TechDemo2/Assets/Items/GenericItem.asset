@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1674b66725fb524fa314eb2938a582f, type: 3}
+  m_Name: GenericItem
+  m_EditorClassIdentifier: 
+  Name: Item
+  Description: A item.
+  ItemIcon: {fileID: 10911, guid: 0000000000000000f000000000000000, type: 0}
+  ItemIsUsable: 0
+  PhysicalItemPrefab: {fileID: 2428771645393314370, guid: 5e10ef26ad74a924abe9ebae73f374bc,
+    type: 3}
+  InventoryItemPrefab: {fileID: 323171497809064011, guid: 4870f7450e211c447b3aa6485562b408,
+    type: 3}

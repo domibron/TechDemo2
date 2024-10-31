@@ -6,7 +6,7 @@ public interface IInventoryItem
 {
 	public bool IsUsable { get; }
 
-	public GenericItem GenericItemSO { get; set; }
+	public GenericItem GenericItemSO { get; }
 
 	public void Drop(Vector3 targetPosition);
 

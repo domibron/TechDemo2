@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 
 public class InteractableController : MonoBehaviour
@@ -12,6 +13,8 @@ public class InteractableController : MonoBehaviour
 	public float MinAllignmentOfRay = 0.8f;
 
 	public bool Locked = false;
+
+	public TMP_Text ToolTip;
 
 	private Camera _camera;
 	private Transform _cameraTransform;
@@ -41,6 +44,16 @@ public class InteractableController : MonoBehaviour
 		if (Input.GetKeyDown(KeyCode.E) && _selectedObject != null)
 		{
 			_selectedObject.InteractWithObject();
+		}
+
+		if (_selectedObject != null && !Locked)
+		{
+			if (!string.IsNullOrEmpty(_selectedObject.InteractionToolTipDescriptive))
+				ToolTip.text = "Press E to " + _selectedObject.InteractionToolTipDescriptive;
+		}
+		else
+		{
+			ToolTip.text = "";
 		}
 	}
 

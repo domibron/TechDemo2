@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 
 [System.Serializable]
@@ -22,9 +24,20 @@ public class InventoryManager : MonoBehaviour
 
 	public GameObject Inventory;
 
-	public Dictionary<int, GameObject> ItemsInSlots;
+	[SerializeField]
+	public GameObject[] ItemsInSlots;
 
-	public GameObject[] Slots;
+	public Transform SlotsParent;
+
+	private GameObject[] _slots;
+
+	private bool _IsVisible = false;
+
+	private GameObject _selectedItem = null;
+
+	private int _itemSlot = -1;
+
+	private bool _dragging = false;
 
 	void Awake()
 	{
@@ -41,33 +54,108 @@ public class InventoryManager : MonoBehaviour
 	// Start is called before the first frame update
 	void Start()
 	{
-		Inventory.SetActive(false);
+		List<Transform> children = SlotsParent.GetComponentsInChildren<Transform>().ToList();
+
+		children.RemoveAt(0);
+
+		_slots = new GameObject[children.Count];
+
+		for (int i = 0; i < children.Count; i++)
+		{
+			_slots[i] = children[i].gameObject;
+		}
+
+		ItemsInSlots = new GameObject[_slots.Length];
+
+		_IsVisible = false;
 	}
 
 	// Update is called once per frame
 	void Update()
 	{
+		Inventory.SetActive(_IsVisible);
 
+
+		if (Input.GetKeyDown(KeyCode.I))
+		{
+			_IsVisible = !_IsVisible;
+		}
+
+		if (Input.GetKeyDown(KeyCode.Mouse0))
+		{
+			List<RaycastResult> results = new List<RaycastResult>();
+
+			PointerEventData pointerData = new PointerEventData(EventSystem.current)
+			{
+				position = Input.mousePosition
+			};
+
+			EventSystem.current.RaycastAll(pointerData, results);
+
+
+
+			GameObject potentialSlot = null;
+
+			foreach (var UIItem in results)
+			{
+				for (int i = 0; i < _slots.Length; i++)
+				{
+					if (UIItem.gameObject == _slots[i] && ItemsInSlots[i] != null)
+					{
+						_dragging = true;
+						potentialSlot = _slots[i];
+
+						_itemSlot = i;
+					}
+
+				}
+			}
+
+
+			_selectedItem = potentialSlot;
+
+			if (_selectedItem == null)
+			{
+				_itemSlot = -1;
+			}
+
+
+		}
+
+		if (Input.GetKeyUp(KeyCode.Mouse0))
+		{
+			List<RaycastResult> results = new List<RaycastResult>();
+
+			PointerEventData pointerData = new PointerEventData(EventSystem.current)
+			{
+				position = Input.mousePosition
+			};
+			// ! somthing gberererere asgrh joggbshignsibbaseui gsighisbhguis
+			EventSystem.current.RaycastAll(pointerData, results);
+
+			_dragging = false;
+		}
 	}
 
 	public void DropItemFromInventory(int key)
 	{
 		ItemsInSlots[key].GetComponent<IInventoryItem>().Drop(PlayerTransform.position);
 
-		ItemsInSlots.Remove(key);
+		ItemsInSlots[key] = null;
 	}
 
-	public int AddItemToInventory(GenericItem item)
+	public int AddItemToInventory(GameObject item)
 	{
 		try
 		{
 			int slotToTake = FindNextSlot();
 
+			GameObject newInventoryItem = Instantiate(item, Vector3.zero, Quaternion.identity, _slots[slotToTake].transform);
 
-			GameObject newInventoryItem = Instantiate(item.InventoryItemPrefab, Vector3.zero, Quaternion.identity, Slots[slotToTake].transform);
+			newInventoryItem.transform.localPosition = Vector3.zero;
 
 
-			ItemsInSlots.Add(slotToTake, newInventoryItem);
+			ItemsInSlots[slotToTake] = newInventoryItem;
 
 			return slotToTake;
 		}
@@ -84,15 +172,19 @@ public class InventoryManager : MonoBehaviour
 	{
 		int currentSlot = 0;
 
-		foreach (int key in ItemsInSlots.Keys)
+		for (int i = 0; i < ItemsInSlots.Length; i++)
 		{
-			if (key == currentSlot)
+			if (ItemsInSlots[i] == null)
+			{
+				break;
+			}
+			else
 			{
 				currentSlot++;
 			}
 		}
 
-		if (currentSlot >= Slots.Length)
+		if (currentSlot >= _slots.Length)
 		{
 			throw new NoSlotAvalibleException("Cannot find a spare slot!");
 		}

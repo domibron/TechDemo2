@@ -6,8 +6,8 @@ public class BasicInventoryItem : MonoBehaviour, IInventoryItem
 {
 	public GenericItem GenericItemSO;
 
-	bool IInventoryItem.IsUsable { get => GenericItemSO.ItemIsUsable; }
-	GenericItem IInventoryItem.GenericItemSO { get => GenericItemSO; set => GenericItemSO = value; }
+	bool IInventoryItem.IsUsable => GenericItemSO.ItemIsUsable;
+	GenericItem IInventoryItem.GenericItemSO => GenericItemSO;
 
 	private int key;
 

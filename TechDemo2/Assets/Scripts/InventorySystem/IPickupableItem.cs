@@ -4,8 +4,8 @@ using UnityEngine;
 
 public interface IPickupableInventoryItem
 {
-	public GenericItem item { get; set; }
+	public GenericItem item { get; }
 
 
-	public void PickUpItem(GenericItem item);
+	public void PickUpItem();
 }

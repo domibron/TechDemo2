@@ -4,30 +4,62 @@ using UnityEngine;
 
 public class BasicPickupableItem : MonoBehaviour, IPickupableInventoryItem, IInteractable
 {
-	GenericItem IPickupableInventoryItem.item { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+	public GenericItem Item;
 
-	string IInteractable.InteractionToolTipDescriptive => throw new System.NotImplementedException();
+	public string ToolTip = "pick up cube.";
+
+	public int InteractableLayer = 6;
+
+	public string InteractableTag = "Interactable";
+
+	GenericItem IPickupableInventoryItem.item => Item;
+
+	string IInteractable.InteractionToolTipDescriptive => ToolTip;
+
+
+	private Outline outline;
+
+
+	void Start()
+	{
+		outline = GetComponent<Outline>();
+
+		outline.OutlineWidth = 0;
+
+		gameObject.layer = InteractableLayer;
+		gameObject.tag = InteractableTag;
+	}
+
 
 
 
 
 	void IInteractable.InteractWithObject()
 	{
-		throw new System.NotImplementedException();
+		(this as IPickupableInventoryItem).PickUpItem();
 	}
 
 	void IInteractable.OnDeselected()
 	{
-		throw new System.NotImplementedException();
+		outline.OutlineWidth = 0;
 	}
 
 	void IInteractable.OnSelected()
 	{
-		throw new System.NotImplementedException();
+		outline.OutlineWidth = 10;
 	}
 
-	void IPickupableInventoryItem.PickUpItem(GenericItem item)
+	void IPickupableInventoryItem.PickUpItem()
 	{
-		throw new System.NotImplementedException();
+		try
+		{
+			InventoryManager.Instance.AddItemToInventory(Item.InventoryItemPrefab);
+
+			Destroy(this.gameObject);
+		}
+		catch (NoSlotAvalibleException e)
+		{
+			print("Cannot pick up item!\n" + e.Message);
+		}
 	}
 }

@@ -5314,7 +5314,7 @@ MonoBehaviour:
   InteractableLayer: 6
   InteractableTag: Interactable
   OutlineWidth: 10
-  ToolTip: interact.
+  ToolTip: use kepad.
   OnInteractEvent:
     m_PersistentCalls:
       m_Calls:
@@ -7329,7 +7329,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   ButtonTag: Button
-  CameraLerpSpeed: 15
+  CameraLerpSpeed: 5
   GoodBeep: {fileID: 8300000, guid: dc80108ab8034044f96720f95a39bfdd, type: 3}
   BadBeep: {fileID: 8300000, guid: 806897d6e44546542a793c720696025e, type: 3}
   SingleBeep: {fileID: 8300000, guid: b92447a3dd9f8034089f28adde688ebf, type: 3}

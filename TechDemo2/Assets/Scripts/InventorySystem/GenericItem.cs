@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Items/Items/GenericItem")]
-public class GenericItem
+[CreateAssetMenu(fileName = "GenericItem", menuName = "PickupableItems/GenericItem", order = 0)]
+public class GenericItem : ScriptableObject
 {
 	public string Name = "Item";
 	public string Description = "A item.";
