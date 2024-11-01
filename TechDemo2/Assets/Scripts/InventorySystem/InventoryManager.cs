@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 
 [System.Serializable]
@@ -94,54 +95,88 @@ public class InventoryManager : MonoBehaviour
 
 
 
-			GameObject potentialSlot = null;
+			GameObject potentialItem = null;
 
 			foreach (var UIItem in results)
 			{
 				for (int i = 0; i < _slots.Length; i++)
 				{
-					if (UIItem.gameObject == _slots[i] && ItemsInSlots[i] != null)
+					if (UIItem.gameObject.transform == _slots[i].transform && ItemsInSlots[i] != null)
 					{
 						_dragging = true;
-						potentialSlot = _slots[i];
+						potentialItem = ItemsInSlots[i];
 
 						_itemSlot = i;
+
 					}
 
 				}
 			}
 
+			if (potentialItem != null) _selectedItem = potentialItem;
+			else _dragging = false;
 
-			_selectedItem = potentialSlot;
 
-			if (_selectedItem == null)
-			{
-				_itemSlot = -1;
-			}
+
 
 
 		}
 
-		if (Input.GetKeyUp(KeyCode.Mouse0))
+		if (Input.GetKeyUp(KeyCode.Mouse0) && _dragging && _selectedItem != null)
 		{
+			bool dropItem = true;
+
 			List<RaycastResult> results = new List<RaycastResult>();
 
 			PointerEventData pointerData = new PointerEventData(EventSystem.current)
 			{
 				position = Input.mousePosition
 			};
-			// ! somthing gberererere asgrh joggbshignsibbaseui gsighisbhguis
+
 			EventSystem.current.RaycastAll(pointerData, results);
 
+			foreach (var UIItem in results)
+			{
+				for (int i = 0; i < _slots.Length; i++)
+				{
+					if (UIItem.gameObject.transform == _slots[i].transform && ItemsInSlots[i] == null)
+					{
+						_selectedItem.transform.SetParent(_slots[i].transform);
+
+						_selectedItem.transform.localPosition = Vector3.zero;
+
+						ItemsInSlots[i] = _selectedItem;
+
+						ItemsInSlots[_itemSlot] = null;
+
+						dropItem = false;
+					}
+					else if (UIItem.gameObject == _slots[i] && ItemsInSlots[i] != null)
+					{
+						dropItem = false;
+					}
+
+				}
+			}
+
+			if (dropItem)
+			{
+				DropItemFromInventory(_itemSlot);
+			}
+
 			_dragging = false;
+
+			// _selectedItem = null;
 		}
 	}
 
-	public void DropItemFromInventory(int key)
+	public void DropItemFromInventory(int itemInSlot)
 	{
-		ItemsInSlots[key].GetComponent<IInventoryItem>().Drop(PlayerTransform.position);
+		ItemsInSlots[itemInSlot].GetComponent<IInventoryItem>().Drop(PlayerTransform.position);
 
-		ItemsInSlots[key] = null;
+
+
+		ItemsInSlots[itemInSlot] = null;
 	}
 
 	public int AddItemToInventory(GameObject item)

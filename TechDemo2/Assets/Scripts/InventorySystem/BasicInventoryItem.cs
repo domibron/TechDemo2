@@ -27,7 +27,7 @@ public class BasicInventoryItem : MonoBehaviour, IInventoryItem
 	{
 		GameObject go = Instantiate(GenericItemSO.PhysicalItemPrefab, targetPosition, Quaternion.identity);
 
-
+		Destroy(this.gameObject);
 	}
 
 	void IInventoryItem.UseItem()
