@@ -177,7 +177,8 @@ public class KeyPad : MonoBehaviour
 
 			if (_animationPlaying)
 			{
-				StopCoroutine(nameof(CodeFlash));
+				StopAllCoroutines();
+
 				ResetKeypadAnimation();
 			}
 
@@ -201,7 +202,8 @@ public class KeyPad : MonoBehaviour
 		{
 			if (_animationPlaying)
 			{
-				StopCoroutine(nameof(CodeFlash));
+				StopAllCoroutines();
+
 				ClearCurrentInput();
 				ResetKeypadAnimation();
 			}
@@ -217,7 +219,7 @@ public class KeyPad : MonoBehaviour
 
 		if (_animationPlaying)
 		{
-			StopCoroutine(nameof(CodeFlash));
+			StopAllCoroutines();
 			ClearCurrentInput();
 			ResetKeypadAnimation();
 		}
@@ -236,19 +238,23 @@ public class KeyPad : MonoBehaviour
 
 			OnUnlocked.Invoke();
 
-			if (!_animationPlaying)
-			{
-				StartCoroutine(CodeFlash(GoodBeep, "green", true));
-			}
+
+			StopAllCoroutines();
+			StartCoroutine(CodeFlash(GoodBeep, "green", true));
+
+
+			AIVoiceManager.Instance.AccessGranted();
 
 			if (_playerOnKeypad) ExitKeypad();
 		}
 		else
 		{
-			if (!_animationPlaying)
-			{
-				StartCoroutine(CodeFlash(BadBeep, "red"));
-			}
+
+			StopAllCoroutines();
+			StartCoroutine(CodeFlash(BadBeep, "red"));
+
+
+			AIVoiceManager.Instance.AccessDenied();
 		}
 	}
 
@@ -391,6 +397,8 @@ public class KeyPad : MonoBehaviour
 
 		string currentCode = _currentInput.ArrayToString().Replace(' ', 'X');
 
+		ClearCurrentInput();
+
 		if (isGood)
 		{
 			RedLight.SetActive(false);
@@ -427,7 +435,6 @@ public class KeyPad : MonoBehaviour
 
 		if (_animationPlaying)
 		{
-			ClearCurrentInput();
 			ResetKeypadAnimation(permGreenLight);
 		}
 

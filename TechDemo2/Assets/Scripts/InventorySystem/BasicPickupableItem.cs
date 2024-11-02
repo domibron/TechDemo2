@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Outline))]
 public class BasicPickupableItem : MonoBehaviour, IPickupableInventoryItem, IInteractable
 {
 	public GenericItem Item;
@@ -20,7 +21,7 @@ public class BasicPickupableItem : MonoBehaviour, IPickupableInventoryItem, IInt
 	private Outline outline;
 
 
-	void Start()
+	protected virtual void Start()
 	{
 		outline = GetComponent<Outline>();
 
@@ -34,26 +35,42 @@ public class BasicPickupableItem : MonoBehaviour, IPickupableInventoryItem, IInt
 
 
 
-	void IInteractable.InteractWithObject()
+	protected virtual void InteractWithObjectCall()
 	{
 		(this as IPickupableInventoryItem).PickUpItem();
 	}
 
-	void IInteractable.OnDeselected()
+	void IInteractable.InteractWithObject()
+	{
+		InteractWithObjectCall();
+	}
+
+	protected virtual void OnDeselectedCall()
 	{
 		outline.OutlineWidth = 0;
 	}
 
-	void IInteractable.OnSelected()
+	void IInteractable.OnDeselected()
+	{
+		OnDeselectedCall();
+	}
+
+	protected virtual void OnSelectedCall()
 	{
 		outline.OutlineWidth = 10;
 	}
 
-	void IPickupableInventoryItem.PickUpItem()
+
+	void IInteractable.OnSelected()
+	{
+		OnSelectedCall();
+	}
+
+	protected virtual void PickUpItemCall()
 	{
 		try
 		{
-			InventoryManager.Instance.AddItemToInventory(Item.InventoryItemPrefab);
+			InventoryManager.Instance.AddItemToInventory(Item.InventoryItemPrefab, Item.ItemIcon);
 
 			Destroy(this.gameObject);
 		}
@@ -62,4 +79,11 @@ public class BasicPickupableItem : MonoBehaviour, IPickupableInventoryItem, IInt
 			print("Cannot pick up item!\n" + e.Message);
 		}
 	}
+
+
+	void IPickupableInventoryItem.PickUpItem()
+	{
+		PickUpItemCall();
+	}
 }
+

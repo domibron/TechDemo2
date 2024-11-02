@@ -30,6 +30,12 @@ public class InventoryManager : MonoBehaviour
 
 	public Transform SlotsParent;
 
+	public Button UseItemButton;
+	public Button DropItemButton;
+
+	public GameObject CursorImageDragger;
+	public Image CursorImageDraggerUIImage;
+
 	private GameObject[] _slots;
 
 	private bool _IsVisible = false;
@@ -108,6 +114,7 @@ public class InventoryManager : MonoBehaviour
 
 						_itemSlot = i;
 
+						CursorImageDraggerUIImage.sprite = ItemsInSlots[i].GetComponent<IInventoryItem>().GenericItemSO.ItemIcon;
 					}
 
 				}
@@ -119,6 +126,34 @@ public class InventoryManager : MonoBehaviour
 
 
 
+
+		}
+
+		if (_selectedItem != null)
+		{
+			UseItemButton.interactable = _selectedItem.GetComponent<IInventoryItem>().IsUsable;
+			DropItemButton.interactable = true;
+
+		}
+		else
+		{
+
+			CursorImageDragger.SetActive(false);
+
+
+
+			UseItemButton.interactable = false;
+			DropItemButton.interactable = false;
+		}
+
+		if (_dragging)
+		{
+			CursorImageDragger.SetActive(true);
+			CursorImageDragger.transform.position = Input.mousePosition;
+		}
+		else
+		{
+			CursorImageDragger.SetActive(false);
 
 		}
 
@@ -149,11 +184,17 @@ public class InventoryManager : MonoBehaviour
 
 						ItemsInSlots[_itemSlot] = null;
 
+						_itemSlot = i;
+
 						dropItem = false;
+
+						// _dragging = false;
 					}
 					else if (UIItem.gameObject == _slots[i] && ItemsInSlots[i] != null)
 					{
 						dropItem = false;
+
+						// _dragging = false;
 					}
 
 				}
@@ -170,16 +211,32 @@ public class InventoryManager : MonoBehaviour
 		}
 	}
 
+	public void UseItem()
+	{
+		if (_selectedItem == null || _itemSlot == -1) return;
+
+		_selectedItem.GetComponent<IInventoryItem>().UseItem();
+	}
+
+	public void DropItem()
+	{
+		if (_selectedItem == null || _itemSlot == -1) return;
+
+		DropItemFromInventory(_itemSlot);
+	}
+
 	public void DropItemFromInventory(int itemInSlot)
 	{
+		_itemSlot = -1;
+
+		_selectedItem = null;
+
 		ItemsInSlots[itemInSlot].GetComponent<IInventoryItem>().Drop(PlayerTransform.position);
-
-
 
 		ItemsInSlots[itemInSlot] = null;
 	}
 
-	public int AddItemToInventory(GameObject item)
+	public int AddItemToInventory(GameObject item, Sprite icon)
 	{
 		try
 		{
@@ -188,7 +245,6 @@ public class InventoryManager : MonoBehaviour
 			GameObject newInventoryItem = Instantiate(item, Vector3.zero, Quaternion.identity, _slots[slotToTake].transform);
 
 			newInventoryItem.transform.localPosition = Vector3.zero;
-
 
 			ItemsInSlots[slotToTake] = newInventoryItem;
 
