@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4c04bbdbab6afe4480de2a3de85bcdb, type: 3}
+  m_Name: Override code
+  m_EditorClassIdentifier: 
+  Name: Override code
+  Content: Override code is 7 1 3 9 9 0 2 5
+  DocumentSprite: {fileID: 21300000, guid: a17f6b2856c1a894188c77294c8e3c9d, type: 3}

@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -17,13 +19,55 @@ public class NoSlotAvalibleException : System.Exception
 		System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
 }
 
+[Serializable]
+public struct DocumentInfo
+{
+	public string Name;
+	public string Info;
+	public Sprite Sprite;
+
+	public DocumentInfo(string name, string info, Sprite sprite)
+	{
+		Name = name;
+		Info = info;
+		Sprite = sprite;
+	}
+
+	public override bool Equals(object obj)
+	{
+		if (obj == null || !(obj is DocumentInfo)) return false;
+
+
+		if (Name == ((DocumentInfo)obj).Name && Info == ((DocumentInfo)obj).Info && Sprite == ((DocumentInfo)obj).Sprite) return false;
+		else return true;
+	}
+
+	public override int GetHashCode()
+	{
+		return base.GetHashCode();
+	}
+
+	public static bool operator ==(DocumentInfo lhs, DocumentInfo rhs)
+	{
+		return lhs.Equals(rhs);
+	}
+
+	public static bool operator !=(DocumentInfo lhs, DocumentInfo rhs)
+	{
+		return !(lhs == rhs);
+	}
+}
+
 public class InventoryManager : MonoBehaviour
 {
 	public static InventoryManager Instance { get; private set; }
 
 	public Transform PlayerTransform;
 
-	public GameObject Inventory;
+	public GameObject InventoryTerminal;
+
+	public GameObject InventoryView;
+	public GameObject DocumentView;
 
 	[SerializeField]
 	public GameObject[] ItemsInSlots;
@@ -36,6 +80,27 @@ public class InventoryManager : MonoBehaviour
 	public GameObject CursorImageDragger;
 	public Image CursorImageDraggerUIImage;
 
+
+
+	[Header("Document stuff")]
+
+	public Transform ScrollContent;
+	public GameObject DocumentItemPrefab;
+
+
+	public TMP_Text DocumentViewerContent;
+
+	public Image DocumentViewerImage;
+
+	public GameObject DocumentViewerGameObject;
+
+	public GameObject TranslateView;
+
+	public TMP_Text TranslateButtonText;
+
+	private bool _translateOpen = false;
+
+
 	private GameObject[] _slots;
 
 	private bool _IsVisible = false;
@@ -45,6 +110,8 @@ public class InventoryManager : MonoBehaviour
 	private int _itemSlot = -1;
 
 	private bool _dragging = false;
+
+	private Dictionary<int, DocumentInfo> _documents = new Dictionary<int, DocumentInfo>();
 
 	void Awake()
 	{
@@ -80,12 +147,22 @@ public class InventoryManager : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		Inventory.SetActive(_IsVisible);
+
+		InventoryTerminal.SetActive(_IsVisible);
 
 
 		if (Input.GetKeyDown(KeyCode.I))
 		{
 			_IsVisible = !_IsVisible;
+			if (_IsVisible)
+			{
+				OpenInventory();
+			}
+		}
+
+		if (_IsVisible && Input.GetKeyDown(KeyCode.Escape))
+		{
+			_IsVisible = false;
 		}
 
 		if (Input.GetKeyDown(KeyCode.Mouse0))
@@ -209,6 +286,11 @@ public class InventoryManager : MonoBehaviour
 
 			// _selectedItem = null;
 		}
+
+		if (Input.GetKeyDown(KeyCode.T))
+		{
+			ToggleTranslate();
+		}
 	}
 
 	public void UseItem()
@@ -283,5 +365,78 @@ public class InventoryManager : MonoBehaviour
 		{
 			return currentSlot;
 		}
+	}
+
+	public int AddDocumentToInventory(DocumentInfo documentInfo)
+	{
+		foreach (var item in _documents)
+		{
+			if (item.Value == documentInfo)
+			{
+				return item.Key;
+			}
+		}
+
+		int place = _documents.Count;
+		_documents.Add(place, documentInfo);
+
+		GameObject go = Instantiate(DocumentItemPrefab, ScrollContent);
+
+		go.GetComponent<DocumentViewItem>().SetUpItem(documentInfo, place);
+
+		// go.transform.position = Vector3.zero;
+
+
+
+		return place;
+	}
+
+	public void OpenDocumentView()
+	{
+		_IsVisible = true;
+
+		DocumentView.SetActive(true);
+		InventoryView.SetActive(false);
+		_translateOpen = false;
+		TranslateButtonText.text = "Translate (T)";
+		TranslateView.SetActive(false);
+		DocumentViewerGameObject.SetActive(false);
+	}
+
+	public void OpenInventory()
+	{
+
+		DocumentView.SetActive(false);
+		InventoryView.SetActive(true);
+	}
+
+	public void OpenDoc(int id)
+	{
+		OpenDocumentView();
+		DocumentViewerGameObject.SetActive(true);
+		DocumentViewerContent.text = _documents[id].Info;
+		DocumentViewerImage.sprite = _documents[id].Sprite;
+	}
+
+	public void CloseDocument()
+	{
+		DocumentViewerGameObject.SetActive(false);
+	}
+
+	public void ToggleTranslate()
+	{
+		_translateOpen = !_translateOpen;
+
+		if (_translateOpen)
+		{
+			TranslateView.SetActive(true);
+			TranslateButtonText.text = "Stop Translate (T)";
+		}
+		else
+		{
+			TranslateView.SetActive(false);
+			TranslateButtonText.text = "Translate (T)";
+		}
+
 	}
 }

@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4c04bbdbab6afe4480de2a3de85bcdb, type: 3}
+  m_Name: Code for cockpit
+  m_EditorClassIdentifier: 
+  Name: Code for doors
+  Content: The code for the doors are... 1 2 3 4.
+  DocumentSprite: {fileID: 21300000, guid: 85fbc6e2a4ce4fc4489c5d0732c2f87a, type: 3}
