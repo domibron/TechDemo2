@@ -5,6 +5,8 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterController))]
 public class MovementController : MonoBehaviour
 {
+	public bool Locked = false;
+
 	public float Speed = 15;
 
 	public float GroundCheckRadius = 0.8f;
@@ -35,6 +37,8 @@ public class MovementController : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
+		if (Locked) return;
+
 		HandleGroundCheck();
 
 		HandleGravity();
