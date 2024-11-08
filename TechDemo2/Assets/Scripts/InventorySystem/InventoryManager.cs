@@ -38,8 +38,8 @@ public struct DocumentInfo
 		if (obj == null || !(obj is DocumentInfo)) return false;
 
 
-		if (Name == ((DocumentInfo)obj).Name && Info == ((DocumentInfo)obj).Info && Sprite == ((DocumentInfo)obj).Sprite) return false;
-		else return true;
+		if (this.Name == ((DocumentInfo)obj).Name && this.Info == ((DocumentInfo)obj).Info && Sprite == ((DocumentInfo)obj).Sprite) return true;
+		else return false;
 	}
 
 	public override int GetHashCode()

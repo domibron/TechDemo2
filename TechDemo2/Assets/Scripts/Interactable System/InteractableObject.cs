@@ -42,6 +42,7 @@ public class InteractableObject : MonoBehaviour, IInteractable
 
 	private void Awake()
 	{
+		if (!this.enabled) return;
 		gameObject.layer = InteractableLayer;
 		gameObject.tag = InteractableTag;
 
