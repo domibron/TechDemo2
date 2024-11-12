@@ -157,12 +157,23 @@ public class InventoryManager : MonoBehaviour
 			if (_IsVisible)
 			{
 				OpenInventory();
+
+			}
+			else
+			{
+				PauseMenu.Instance.LockEscape = false;
+
+				Cursor.lockState = CursorLockMode.Locked;
+				Cursor.visible = false;
 			}
 		}
 
 		if (_IsVisible && Input.GetKeyDown(KeyCode.Escape))
 		{
 			_IsVisible = false;
+			StartCoroutine(DelayForPause(0.05f));
+			Cursor.lockState = CursorLockMode.Locked;
+			Cursor.visible = false;
 		}
 
 		if (Input.GetKeyDown(KeyCode.Mouse0))
@@ -401,6 +412,11 @@ public class InventoryManager : MonoBehaviour
 		TranslateButtonText.text = "Translate (T)";
 		TranslateView.SetActive(false);
 		DocumentViewerGameObject.SetActive(false);
+
+		PauseMenu.Instance.LockEscape = true;
+
+		Cursor.lockState = CursorLockMode.None;
+		Cursor.visible = true;
 	}
 
 	public void OpenInventory()
@@ -408,6 +424,11 @@ public class InventoryManager : MonoBehaviour
 
 		DocumentView.SetActive(false);
 		InventoryView.SetActive(true);
+
+		PauseMenu.Instance.LockEscape = true;
+
+		Cursor.lockState = CursorLockMode.None;
+		Cursor.visible = true;
 	}
 
 	public void OpenDoc(int id)
@@ -437,6 +458,15 @@ public class InventoryManager : MonoBehaviour
 			TranslateView.SetActive(false);
 			TranslateButtonText.text = "Translate (T)";
 		}
+
+	}
+
+	// for giving back pause menu abilities.
+	public IEnumerator DelayForPause(float delayTime)
+	{
+		yield return new WaitForSeconds(delayTime);
+		PauseMenu.Instance.LockEscape = false;
+
 
 	}
 }

@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
-using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -100,6 +99,13 @@ public class KeyPad : MonoBehaviour
 	void Update()
 	{
 		if (!_playerOnKeypad) return;
+
+		// prevent premature unlocking when using inventory.
+		if (_playerOnKeypad && !PauseMenu.Instance.LockEscape)
+		{
+			PauseMenu.Instance.LockEscape = true;
+		}
+
 
 		if (Input.GetKeyDown(KeyCode.Escape))
 		{
@@ -278,7 +284,7 @@ public class KeyPad : MonoBehaviour
 
 	private void DeleteLastInCurrentInput()
 	{
-		_currentPlace--;
+		if (_currentPlace > 0) _currentPlace--;
 		_currentInput[_currentPlace] = ' ';
 	}
 
@@ -302,6 +308,11 @@ public class KeyPad : MonoBehaviour
 	public void EnterKeypad()
 	{
 		if (_playerOnKeypad) return;
+
+		PauseMenu.Instance.LockEscape = true;
+
+		Cursor.lockState = CursorLockMode.None;
+		Cursor.visible = true;
 
 		_playerOnKeypad = true;
 
@@ -328,6 +339,11 @@ public class KeyPad : MonoBehaviour
 		{
 			StartCoroutine(LerpCamera(false));
 		}
+
+		PauseMenu.Instance.LockEscape = false;
+
+		Cursor.lockState = CursorLockMode.Locked;
+		Cursor.visible = false;
 	}
 
 	private void SetKeypadState(bool state)
