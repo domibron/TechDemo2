@@ -25,6 +25,8 @@ public class LookController : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
+		if (PauseMenu.Instance.IsPaused) return;
+
 		if (Locked)
 		{
 			Helmet.SetActive(false);

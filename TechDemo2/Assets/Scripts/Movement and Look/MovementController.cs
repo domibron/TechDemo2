@@ -37,6 +37,8 @@ public class MovementController : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
+		if (PauseMenu.Instance.IsPaused) return;
+
 		if (Locked) return;
 
 		HandleGroundCheck();
